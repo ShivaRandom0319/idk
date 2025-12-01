@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Lessons</title>
+  <style>
+    :root {
+      --primary: #2d2d2d;
+      --accent: #4caf50;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      padding: 1.5rem;
+      color: var(--primary);
+    }
+
+    nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      background: #e0e0e0;
+    }
+
+    nav a:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+    }
+
+    button {
+      background-color: var(--accent);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      background: var(--bg);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 4px var(--shadow);
+      flex-wrap: wrap;
+    }
+
+    .plan-display {
+      position: relative;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      background: var(--bg);
+      margin-top: 1rem;
+      word-break: break-word;
+    }
+
+    .edit-plan-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #2196f3;
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#" onclick="showPage('home')">🏠 Home</a>
+    <a href="#" onclick="showPage('plan')">📝 Plan</a>
+  </nav>
+
+  <!-- Home Page -->
+  <div id="home" class="container">
+    <h2>📚 Life Lessons</h2>
+    <input type="text" id="lessonInput" placeholder="Add a new life lesson" />
+    <button onclick="addLesson()">Add</button>
+    <ul id="lessonsList"></ul>
+  </div>
+
+  <!-- Plan Page -->
+  <div id="plan" class="container hidden">
+    <h2>🧭 My Plan</h2>
+    <div class="plan-display" id="planDisplay">
+      <button class="edit-plan-btn" onclick="editPlan()">Edit</button>
+      <div id="planText">No plan saved yet.</div>
+    </div>
+    <div id="planEditBox" class="hidden">
+      <input type="text" id="planInput" placeholder="Write or update your plan" />
+      <button onclick="savePlan()">Save Plan</button>
+    </div>
+  </div>
+
+  <script>
+    let lessons = JSON.parse(localStorage.getItem("lifeLessons") || "[]");
+    let savedPlan = localStorage.getItem("savedPlan") || "";
+    let currentEditIndex = null;
+
+    function showPage(page) {
+      document.getElementById("home").classList.add("hidden");
+      document.getElementById("plan").classList.add("hidden");
+      document.getElementById(page).classList.remove("hidden");
+      if (page === 'plan') {
+        document.getElementById("planText").textContent = savedPlan || 'No plan saved yet.';
+      }
+    }
+
+    function addLesson() {
+      const input = document.getElementById("lessonInput");
+      const text = input.value.trim();
+      if (text) {
+        if (currentEditIndex !== null) {
+          lessons[currentEditIndex] = text;
+          currentEditIndex = null;
+        } else {
+          lessons.push(text);
+        }
+        input.value = '';
+        saveLessons();
+        renderLessons();
+      }
+    }
+
+    function renderLessons() {
+      const list = document.getElementById("lessonsList");
+      list.innerHTML = '';
+      lessons.forEach((lesson, i) => {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        span.textContent = lesson;
+
+        const actions = document.createElement("div");
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.onclick = () => {
+          document.getElementById("lessonInput").value = lesson;
+          currentEditIndex = i;
+        };
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => {
+          lessons.splice(i, 1);
+          saveLessons();
+          renderLessons();
+        };
+
+        const upBtn = document.createElement("button");
+        upBtn.textContent = "↑";
+        upBtn.onclick = () => {
+          if (i > 0) {
+            [lessons[i - 1], lessons[i]] = [lessons[i], lessons[i - 1]];
+            saveLessons();
+            renderLessons();
+          }
+        };
+
+        const downBtn = document.createElement("button");
+        downBtn.textContent = "↓";
+        downBtn.onclick = () => {
+          if (i < lessons.length - 1) {
+            [lessons[i + 1], lessons[i]] = [lessons[i], lessons[i + 1]];
+            saveLessons();
+            renderLessons();
+          }
+        };
+
+        actions.append(editBtn, deleteBtn, upBtn, downBtn);
+        li.append(span, actions);
+        list.appendChild(li);
+      });
+    }
+
+    function saveLessons() {
+      localStorage.setItem("lifeLessons", JSON.stringify(lessons));
+    }
+
+    function savePlan() {
+      const plan = document.getElementById("planInput").value.trim();
+      savedPlan = plan;
+      localStorage.setItem("savedPlan", savedPlan);
+      document.getElementById("planText").textContent = plan || 'No plan saved yet.';
+      document.getElementById("planEditBox").classList.add("hidden");
+      document.getElementById("planDisplay").classList.remove("hidden");
+      document.getElementById("planInput").value = '';
+    }
+
+    function editPlan() {
+      document.getElementById("planInput").value = savedPlan;
+      document.getElementById("planDisplay").classList.add("hidden");
+      document.getElementById("planEditBox").classList.remove("hidden");
+    }
+
+    // Initial Render
+    renderLessons();
+    showPage("home");
+  </script>
+</body>
+</html>
