@@ -31,6 +31,7 @@
       display: flex;
       gap: 1rem;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
     }
 
     nav a {
@@ -138,6 +139,7 @@
   <nav>
     <a href="#" onclick="showPage('home')">🏠 Home</a>
     <a href="#" onclick="showPage('plan')">📝 Plan</a>
+    <a href="#" onclick="showPage('notTodo')">🚫 Not To Do</a>
   </nav>
 
   <!-- Home Page -->
@@ -161,14 +163,25 @@
     </div>
   </div>
 
+  <!-- Not To Do Page -->
+  <div id="notTodo" class="container hidden">
+    <h2>🚫 Not To Do List</h2>
+    <input type="text" id="notTodoInput" placeholder="Add something not to do" />
+    <button onclick="addNotTodo()">Add</button>
+    <ul id="notTodoList"></ul>
+  </div>
+
   <script>
     let lessons = JSON.parse(localStorage.getItem("lifeLessons") || "[]");
+    let notTodos = JSON.parse(localStorage.getItem("notTodos") || "[]");
     let savedPlan = localStorage.getItem("savedPlan") || "";
     let currentEditIndex = null;
+    let currentNotTodoEdit = null;
 
     function showPage(page) {
       document.getElementById("home").classList.add("hidden");
       document.getElementById("plan").classList.add("hidden");
+      document.getElementById("notTodo").classList.add("hidden");
       document.getElementById(page).classList.remove("hidden");
       if (page === 'plan') {
         document.getElementById("planText").textContent = savedPlan || 'No plan saved yet.';
@@ -201,43 +214,20 @@
 
         const actions = document.createElement("div");
 
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.onclick = () => {
-          document.getElementById("lessonInput").value = lesson;
-          currentEditIndex = i;
-        };
+        [
+          ['Edit', () => { document.getElementById("lessonInput").value = lesson; currentEditIndex = i; }],
+          ['Delete', () => { lessons.splice(i, 1); saveLessons(); renderLessons(); }],
+          ['↑', () => { if (i > 0) [lessons[i - 1], lessons[i]] = [lessons[i], lessons[i - 1]]; saveLessons(); renderLessons(); }],
+          ['↓', () => { if (i < lessons.length - 1) [lessons[i + 1], lessons[i]] = [lessons[i], lessons[i + 1]]; saveLessons(); renderLessons(); }]
+        ].forEach(([text, handler]) => {
+          const btn = document.createElement("button");
+          btn.textContent = text;
+          btn.onclick = handler;
+          actions.appendChild(btn);
+        });
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.onclick = () => {
-          lessons.splice(i, 1);
-          saveLessons();
-          renderLessons();
-        };
-
-        const upBtn = document.createElement("button");
-        upBtn.textContent = "↑";
-        upBtn.onclick = () => {
-          if (i > 0) {
-            [lessons[i - 1], lessons[i]] = [lessons[i], lessons[i - 1]];
-            saveLessons();
-            renderLessons();
-          }
-        };
-
-        const downBtn = document.createElement("button");
-        downBtn.textContent = "↓";
-        downBtn.onclick = () => {
-          if (i < lessons.length - 1) {
-            [lessons[i + 1], lessons[i]] = [lessons[i], lessons[i + 1]];
-            saveLessons();
-            renderLessons();
-          }
-        };
-
-        actions.append(editBtn, deleteBtn, upBtn, downBtn);
-        li.append(span, actions);
+        li.appendChild(span);
+        li.appendChild(actions);
         list.appendChild(li);
       });
     }
@@ -262,8 +252,57 @@
       document.getElementById("planEditBox").classList.remove("hidden");
     }
 
-    // Initial Render
+    function addNotTodo() {
+      const input = document.getElementById("notTodoInput");
+      const text = input.value.trim();
+      if (text) {
+        if (currentNotTodoEdit !== null) {
+          notTodos[currentNotTodoEdit] = text;
+          currentNotTodoEdit = null;
+        } else {
+          notTodos.push(text);
+        }
+        input.value = '';
+        saveNotTodos();
+        renderNotTodos();
+      }
+    }
+
+    function renderNotTodos() {
+      const list = document.getElementById("notTodoList");
+      list.innerHTML = '';
+      notTodos.forEach((item, i) => {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        span.textContent = item;
+
+        const actions = document.createElement("div");
+
+        [
+          ['Edit', () => { document.getElementById("notTodoInput").value = item; currentNotTodoEdit = i; }],
+          ['Delete', () => { notTodos.splice(i, 1); saveNotTodos(); renderNotTodos(); }],
+          ['↑', () => { if (i > 0) [notTodos[i - 1], notTodos[i]] = [notTodos[i], notTodos[i - 1]]; saveNotTodos(); renderNotTodos(); }],
+          ['↓', () => { if (i < notTodos.length - 1) [notTodos[i + 1], notTodos[i]] = [notTodos[i], notTodos[i + 1]]; saveNotTodos(); renderNotTodos(); }]
+        ].forEach(([text, handler]) => {
+          const btn = document.createElement("button");
+          btn.textContent = text;
+          btn.onclick = handler;
+          actions.appendChild(btn);
+        });
+
+        li.appendChild(span);
+        li.appendChild(actions);
+        list.appendChild(li);
+      });
+    }
+
+    function saveNotTodos() {
+      localStorage.setItem("notTodos", JSON.stringify(notTodos));
+    }
+
+    // Init
     renderLessons();
+    renderNotTodos();
     showPage("home");
   </script>
 </body>
