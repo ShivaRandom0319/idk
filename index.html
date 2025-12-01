@@ -3,307 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Life Lessons</title>
-  <style>
-    :root {
-      --primary: #2d2d2d;
-      --accent: #4caf50;
-      --bg: #f7f8fa;
-      --card: #ffffff;
-      --shadow: rgba(0, 0, 0, 0.1);
-      --radius: 8px;
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: var(--bg);
-      padding: 1.5rem;
-      color: var(--primary);
-    }
-
-    nav {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--primary);
-      font-weight: bold;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius);
-      background: #e0e0e0;
-    }
-
-    nav a:hover {
-      background: var(--accent);
-      color: white;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: var(--card);
-      padding: 1.5rem;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 10px var(--shadow);
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: var(--radius);
-    }
-
-    button {
-      background-color: var(--accent);
-      border: none;
-      color: white;
-      padding: 0.5rem 1rem;
-      margin: 0.25rem;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #388e3c;
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li {
-      background: var(--bg);
-      padding: 0.75rem;
-      border-radius: var(--radius);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-      box-shadow: 0 1px 4px var(--shadow);
-      flex-wrap: wrap;
-    }
-
-    .plan-display {
-      position: relative;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: var(--radius);
-      background: var(--bg);
-      margin-top: 1rem;
-      word-break: break-word;
-    }
-
-    .edit-plan-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #2196f3;
-    }
-
-    @media (max-width: 600px) {
-      nav {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      li {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      button {
-        width: 100%;
-      }
-    }
-  </style>
+  <title>Life Manager</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <nav>
-    <a href="#" onclick="showPage('home')">🏠 Home</a>
-    <a href="#" onclick="showPage('plan')">📝 Plan</a>
-    <a href="#" onclick="showPage('notTodo')">🚫 Not To Do</a>
-  </nav>
 
-  <!-- Home Page -->
-  <div id="home" class="container">
-    <h2>📚 Life Lessons</h2>
-    <input type="text" id="lessonInput" placeholder="Add a new life lesson" />
-    <button onclick="addLesson()">Add</button>
-    <ul id="lessonsList"></ul>
+<nav>
+  <a href="#" onclick="showPage('home')">🏠 Home</a>
+  <a href="#" onclick="showPage('plan')">📝 Plan</a>
+  <a href="#" onclick="showPage('notTodo')">🚫 Not To Do</a>
+  <a href="#" onclick="showPage('mustDo')">✅ Must Do</a>
+  <a href="#" onclick="showPage('limited')">⏳ Limited</a>
+</nav>
+
+<div id="home" class="container">
+  <h2>📚 Life Lessons</h2>
+  <input type="text" id="lessonInput" placeholder="Add a new life lesson" />
+  <button onclick="addLesson()">Add</button>
+  <ul id="lessonsList"></ul>
+</div>
+
+<div id="plan" class="container hidden">
+  <h2>🧭 My Plan</h2>
+  <div class="plan-display" id="planDisplay">
+    <button class="edit-plan-btn" onclick="editPlan()">Edit</button>
+    <div id="planText">No plan saved yet.</div>
   </div>
-
-  <!-- Plan Page -->
-  <div id="plan" class="container hidden">
-    <h2>🧭 My Plan</h2>
-    <div class="plan-display" id="planDisplay">
-      <button class="edit-plan-btn" onclick="editPlan()">Edit</button>
-      <div id="planText">No plan saved yet.</div>
-    </div>
-    <div id="planEditBox" class="hidden">
-      <input type="text" id="planInput" placeholder="Write or update your plan" />
-      <button onclick="savePlan()">Save Plan</button>
-    </div>
+  <div id="planEditBox" class="hidden">
+    <input type="text" id="planInput" placeholder="Write or update your plan" />
+    <button onclick="savePlan()">Save Plan</button>
   </div>
+</div>
 
-  <!-- Not To Do Page -->
-  <div id="notTodo" class="container hidden">
-    <h2>🚫 Not To Do List</h2>
-    <input type="text" id="notTodoInput" placeholder="Add something not to do" />
-    <button onclick="addNotTodo()">Add</button>
-    <ul id="notTodoList"></ul>
-  </div>
+<div id="notTodo" class="container hidden">
+  <h2>🚫 Not To Do</h2>
+  <input type="text" id="notTodoInput" placeholder="Add something NOT to do" />
+  <button onclick="addNotTodo()">Add</button>
+  <ul id="notTodoList"></ul>
+</div>
 
-  <script>
-    let lessons = JSON.parse(localStorage.getItem("lifeLessons") || "[]");
-    let notTodos = JSON.parse(localStorage.getItem("notTodos") || "[]");
-    let savedPlan = localStorage.getItem("savedPlan") || "";
-    let currentEditIndex = null;
-    let currentNotTodoEdit = null;
+<div id="mustDo" class="container hidden">
+  <h2>✅ Must Do</h2>
+  <input type="text" id="mustDoInput" placeholder="Add something you MUST do" />
+  <button onclick="addMustDo()">Add</button>
+  <ul id="mustDoList"></ul>
+</div>
 
-    function showPage(page) {
-      document.getElementById("home").classList.add("hidden");
-      document.getElementById("plan").classList.add("hidden");
-      document.getElementById("notTodo").classList.add("hidden");
-      document.getElementById(page).classList.remove("hidden");
-      if (page === 'plan') {
-        document.getElementById("planText").textContent = savedPlan || 'No plan saved yet.';
-      }
-    }
+<div id="limited" class="container hidden">
+  <h2>⏳ Limited</h2>
+  <input type="text" id="limitedInput" placeholder="Add a time-limited item" />
+  <button onclick="addLimited()">Add</button>
+  <ul id="limitedList"></ul>
+</div>
 
-    function addLesson() {
-      const input = document.getElementById("lessonInput");
-      const text = input.value.trim();
-      if (text) {
-        if (currentEditIndex !== null) {
-          lessons[currentEditIndex] = text;
-          currentEditIndex = null;
-        } else {
-          lessons.push(text);
-        }
-        input.value = '';
-        saveLessons();
-        renderLessons();
-      }
-    }
-
-    function renderLessons() {
-      const list = document.getElementById("lessonsList");
-      list.innerHTML = '';
-      lessons.forEach((lesson, i) => {
-        const li = document.createElement("li");
-        const span = document.createElement("span");
-        span.textContent = lesson;
-
-        const actions = document.createElement("div");
-
-        [
-          ['Edit', () => { document.getElementById("lessonInput").value = lesson; currentEditIndex = i; }],
-          ['Delete', () => { lessons.splice(i, 1); saveLessons(); renderLessons(); }],
-          ['↑', () => { if (i > 0) [lessons[i - 1], lessons[i]] = [lessons[i], lessons[i - 1]]; saveLessons(); renderLessons(); }],
-          ['↓', () => { if (i < lessons.length - 1) [lessons[i + 1], lessons[i]] = [lessons[i], lessons[i + 1]]; saveLessons(); renderLessons(); }]
-        ].forEach(([text, handler]) => {
-          const btn = document.createElement("button");
-          btn.textContent = text;
-          btn.onclick = handler;
-          actions.appendChild(btn);
-        });
-
-        li.appendChild(span);
-        li.appendChild(actions);
-        list.appendChild(li);
-      });
-    }
-
-    function saveLessons() {
-      localStorage.setItem("lifeLessons", JSON.stringify(lessons));
-    }
-
-    function savePlan() {
-      const plan = document.getElementById("planInput").value.trim();
-      savedPlan = plan;
-      localStorage.setItem("savedPlan", savedPlan);
-      document.getElementById("planText").textContent = plan || 'No plan saved yet.';
-      document.getElementById("planEditBox").classList.add("hidden");
-      document.getElementById("planDisplay").classList.remove("hidden");
-      document.getElementById("planInput").value = '';
-    }
-
-    function editPlan() {
-      document.getElementById("planInput").value = savedPlan;
-      document.getElementById("planDisplay").classList.add("hidden");
-      document.getElementById("planEditBox").classList.remove("hidden");
-    }
-
-    function addNotTodo() {
-      const input = document.getElementById("notTodoInput");
-      const text = input.value.trim();
-      if (text) {
-        if (currentNotTodoEdit !== null) {
-          notTodos[currentNotTodoEdit] = text;
-          currentNotTodoEdit = null;
-        } else {
-          notTodos.push(text);
-        }
-        input.value = '';
-        saveNotTodos();
-        renderNotTodos();
-      }
-    }
-
-    function renderNotTodos() {
-      const list = document.getElementById("notTodoList");
-      list.innerHTML = '';
-      notTodos.forEach((item, i) => {
-        const li = document.createElement("li");
-        const span = document.createElement("span");
-        span.textContent = item;
-
-        const actions = document.createElement("div");
-
-        [
-          ['Edit', () => { document.getElementById("notTodoInput").value = item; currentNotTodoEdit = i; }],
-          ['Delete', () => { notTodos.splice(i, 1); saveNotTodos(); renderNotTodos(); }],
-          ['↑', () => { if (i > 0) [notTodos[i - 1], notTodos[i]] = [notTodos[i], notTodos[i - 1]]; saveNotTodos(); renderNotTodos(); }],
-          ['↓', () => { if (i < notTodos.length - 1) [notTodos[i + 1], notTodos[i]] = [notTodos[i], notTodos[i + 1]]; saveNotTodos(); renderNotTodos(); }]
-        ].forEach(([text, handler]) => {
-          const btn = document.createElement("button");
-          btn.textContent = text;
-          btn.onclick = handler;
-          actions.appendChild(btn);
-        });
-
-        li.appendChild(span);
-        li.appendChild(actions);
-        list.appendChild(li);
-      });
-    }
-
-    function saveNotTodos() {
-      localStorage.setItem("notTodos", JSON.stringify(notTodos));
-    }
-
-    // Init
-    renderLessons();
-    renderNotTodos();
-    showPage("home");
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
